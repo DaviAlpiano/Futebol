@@ -52,4 +52,13 @@ describe('Seu teste', () => {
     expect(chaiHttpResponse).to.have.status(200);
     expect(chaiHttpResponse.body).to.deep.equal(times);
   });
+
+  it('Deve retornar um time', async () => {
+    sinon.stub(TeamModel, "findByPk").resolves(TeamModel.build(times[0]));
+
+    chaiHttpResponse = await chai.request(app).get('/teams/1');
+
+    expect(chaiHttpResponse).to.have.status(200);
+    expect(chaiHttpResponse.body).to.deep.equal(times[0]);
+  });
 });
