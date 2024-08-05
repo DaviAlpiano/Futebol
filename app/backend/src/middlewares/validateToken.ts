@@ -5,7 +5,6 @@ import UserService from '../service/user.service';
 const validateToken = async (req: Request, res:Response, next: NextFunction) => {
   try {
     const bearerToken = req.header('Authorization');
-    console.log(bearerToken, 'TESTE');
     if (!bearerToken) {
       return res.status(401).json({ message: 'Token not found' });
     }
