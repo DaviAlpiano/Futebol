@@ -6,9 +6,13 @@ type getTeamsType = {
   data: TeamModel[],
 };
 
+type message = {
+  message: string,
+};
+
 type getTeamType = {
   status: HttpStatus,
-  data: TeamModel | null,
+  data: TeamModel | message,
 };
 
 export default class TeamService {
@@ -19,6 +23,7 @@ export default class TeamService {
 
   static async getTeam(id:string): Promise<getTeamType> {
     const data = await TeamModel.findByPk(id);
+    if (!data) return { status: 'notFound', data: { message: 'There is no team with such id!' } };
     return { status: 'successful', data };
   }
 }
