@@ -16,14 +16,15 @@ export default class MatchesController {
 
   static async setInProgress(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const { status, data } = await MatchesService.setInProgress(id);
+    const { status, data } = await MatchesService.setInProgress(Number(id));
     res.status(mapStatusHTTP(status)).json(data);
   }
 
   static async setGoals(req: Request, res: Response) {
     const { id } = req.params;
     const { homeTeamGoals, awayTeamGoals } = req.body;
-    const { status, data } = await MatchesService.setGoals(id, homeTeamGoals, awayTeamGoals);
+    const { status, data } = await MatchesService
+      .setGoals(Number(id), homeTeamGoals, awayTeamGoals);
     res.status(mapStatusHTTP(status)).json(data);
   }
 

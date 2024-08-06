@@ -32,20 +32,20 @@ export default class MatchesService {
     return { status: 'successful', data };
   }
 
-  static async setInProgress(id: string): Promise<attMatchesType> {
+  static async setInProgress(id: number): Promise<attMatchesType> {
     const data = await MatchesModel.update({ inProgress: 0 }, { where: { id } });
     if (data[0]) return { status: 'successful', data: { message: 'Finished' } };
     return { status: 'conflict', data: { message: 'Not Found or not change' } };
   }
 
-  static async setGoals(id: string, hGoals: string, aGoals: string): Promise<attMatchesType> {
+  static async setGoals(id: number, hGoals: number, aGoals: number): Promise<attMatchesType> {
     const data = await MatchesModel
       .update({ homeTeamGoals: Number(hGoals), awayTeamGoals: Number(aGoals) }, { where: { id } });
     if (data[0]) return { status: 'successful', data: { message: 'Updated' } };
     return { status: 'conflict', data: { message: 'Not Found or not change' } };
   }
 
-  static async setMatches(hId: string, hGoals:string, aId:string, aGoals:string)
+  static async setMatches(hId: number, hGoals:number, aId:number, aGoals:number)
     : Promise<getMatchesType> {
     try {
       if (hId === aId) {
