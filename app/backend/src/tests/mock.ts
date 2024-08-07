@@ -1,7 +1,7 @@
 const times = [
     {
       id: 1,
-      teamName: "Avaí/Kindermann"
+      teamName: "Avaí/Kindermann",
     },
     {
       id: 2,
