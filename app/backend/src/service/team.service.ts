@@ -35,6 +35,14 @@ export default class TeamService {
     return { status: 'successful', data };
   }
 
+  static async getTeamsAndMatchesAway(): Promise<getTeamsAndMatchsType> {
+    const data = await TeamModel.findAll({
+      include: [
+        { model: MatchesModel, as: 'matchesAway', where: { inProgress: 0 } }],
+    });
+    return { status: 'successful', data };
+  }
+
   static async getTeam(id:string): Promise<getTeamType> {
     const data = await TeamModel.findByPk(id);
     if (!data) return { status: 'notFound', data: { message: 'There is no team with such id!' } };

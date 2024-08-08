@@ -1,4 +1,4 @@
-import { Team } from '../Interfaces/TeamMatches';
+import { Team, TeamAway } from '../Interfaces/TeamMatches';
 import { HttpStatus } from '../utils/mapStatusHTTP';
 import TeamService from './team.service';
 
@@ -20,6 +20,8 @@ type Leaderboard = {
   efficiency: number;
 };
 
+type homeOrAway = 'homeTeamGoals' | 'awayTeamGoals' ;
+
 export default class LeaderboardService {
   private name: string;
   private totalPoints: number;
@@ -32,7 +34,7 @@ export default class LeaderboardService {
   private goalsBalance: number;
   private efficiency: number;
 
-  constructor(private team: Team) {
+  constructor(private team: Team, private hOrA: homeOrAway, private aOrH: homeOrAway) {
     this.name = team.teamName;
     this.totalPoints = this.points();
     this.totalGames = team.matches.length;
@@ -63,10 +65,10 @@ export default class LeaderboardService {
   private points():number {
     return this.team.matches.reduce((acc: number, act) => {
       let newAcc: number = acc;
-      if (act.homeTeamGoals > act.awayTeamGoals) {
+      if (act[this.hOrA] > act[this.aOrH]) {
         newAcc = acc + 3;
       }
-      if (act.homeTeamGoals === act.awayTeamGoals) {
+      if (act[this.hOrA] === act[this.aOrH]) {
         newAcc = acc + 1;
       }
       return newAcc;
@@ -76,7 +78,7 @@ export default class LeaderboardService {
   private victories():number {
     return this.team.matches.reduce((acc: number, act) => {
       let newAcc: number = acc;
-      if (act.homeTeamGoals > act.awayTeamGoals) {
+      if (act[this.hOrA] > act[this.aOrH]) {
         newAcc = acc + 1;
       }
       return newAcc;
@@ -86,7 +88,7 @@ export default class LeaderboardService {
   private draws():number {
     return this.team.matches.reduce((acc: number, act) => {
       let newAcc: number = acc;
-      if (act.homeTeamGoals === act.awayTeamGoals) {
+      if (act[this.hOrA] === act[this.aOrH]) {
         newAcc = acc + 1;
       }
       return newAcc;
@@ -96,7 +98,7 @@ export default class LeaderboardService {
   private losses():number {
     return this.team.matches.reduce((acc: number, act) => {
       let newAcc: number = acc;
-      if (act.homeTeamGoals < act.awayTeamGoals) {
+      if (act[this.hOrA] < act[this.aOrH]) {
         newAcc = acc + 1;
       }
       return newAcc;
@@ -105,14 +107,14 @@ export default class LeaderboardService {
 
   private goalsF():number {
     return this.team.matches.reduce((acc: number, act) => {
-      const newAcc: number = acc + act.homeTeamGoals;
+      const newAcc: number = acc + act[this.hOrA];
       return newAcc;
     }, 0);
   }
 
   private goalsO():number {
     return this.team.matches.reduce((acc: number, act) => {
-      const newAcc: number = acc + act.awayTeamGoals;
+      const newAcc: number = acc + act[this.aOrH];
       return newAcc;
     }, 0);
   }
@@ -144,7 +146,22 @@ export default class LeaderboardService {
     const times = await TeamService.getTeamsAndMatches();
     const jsons = JSON.stringify(times.data);
     const jTimes: Team[] = JSON.parse(jsons);
-    const stats = jTimes.map((time) => new LeaderboardService(time).getStatus());
+    const stats = jTimes
+      .map((time) => new LeaderboardService(time, 'homeTeamGoals', 'awayTeamGoals').getStatus());
+    const data = LeaderboardService.classification(stats);
+    return { status: 'successful', data };
+  }
+
+  static async getLeaderboardServicesAway(): Promise<getLeaderbordType> {
+    const times = await TeamService.getTeamsAndMatchesAway();
+    const jsons = JSON.stringify(times.data);
+    const jTimes: Team[] = JSON.parse(jsons).map((team: TeamAway) => {
+      const newTeam = { ...team, matches: team.matchesAway };
+      delete newTeam.matchesAway;
+      return newTeam;
+    });
+    const stats = jTimes
+      .map((time) => new LeaderboardService(time, 'awayTeamGoals', 'homeTeamGoals').getStatus());
     const data = LeaderboardService.classification(stats);
     return { status: 'successful', data };
   }

@@ -7,4 +7,9 @@ export default class LeaderboardController {
     const { status, data } = await LeaderboardService.getLeaderboardServices();
     res.status(mapStatusHTTP(status)).json(data);
   }
+
+  static async getLeaderbordAway(req: Request, res: Response): Promise<void> {
+    const { status, data } = await LeaderboardService.getLeaderboardServicesAway();
+    res.status(mapStatusHTTP(status)).json(data);
+  }
 }
