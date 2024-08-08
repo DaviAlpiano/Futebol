@@ -1,4 +1,5 @@
-import { Team, TeamAway } from '../Interfaces/TeamMatches';
+import { Matches } from '../types/Matchs';
+import { Team, TeamAway, TeamGeneral } from '../Interfaces/TeamMatches';
 import { HttpStatus } from '../utils/mapStatusHTTP';
 import TeamService from './team.service';
 
@@ -142,8 +143,40 @@ export default class LeaderboardService {
     return clas;
   }
 
+  static awayToHome(away: Matches[]) {
+    return away.map((time) => {
+      const newMatch = {
+        ...time,
+        homeTeamId: time.awayTeamId,
+        homeTeamGoals: time.awayTeamGoals,
+        awayTeamId: time.homeTeamId,
+        awayTeamGoals: time.homeTeamGoals,
+      };
+      return newMatch;
+    });
+  }
+
   static async getLeaderboardServices(): Promise<getLeaderbordType> {
     const times = await TeamService.getTeamsAndMatches();
+    const jsons = JSON.stringify(times.data);
+    const jTimes = JSON.parse(jsons);
+    const retorno: Team[] = jTimes.map((time:TeamGeneral) => {
+      const newTime = {
+        id: time.id,
+        teamName: time.teamName,
+        matches: [...time.matches, ...LeaderboardService.awayToHome(time.matchesAway)],
+      };
+      return newTime;
+    });
+    console.log(retorno);
+    const stats = retorno
+      .map((time) => new LeaderboardService(time, 'homeTeamGoals', 'awayTeamGoals').getStatus());
+    const data = LeaderboardService.classification(stats);
+    return { status: 'successful', data };
+  }
+
+  static async getLeaderboardServicesHome(): Promise<getLeaderbordType> {
+    const times = await TeamService.getTeamsAndMatchesHome();
     const jsons = JSON.stringify(times.data);
     const jTimes: Team[] = JSON.parse(jsons);
     const stats = jTimes

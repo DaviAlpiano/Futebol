@@ -6,6 +6,13 @@ export interface Team {
   matches: Matches[];
 }
 
+export interface TeamGeneral {
+  id: number;
+  teamName: string;
+  matches: Matches[];
+  matchesAway: Matches[];
+}
+
 export interface TeamAway {
   id: number;
   teamName: string;

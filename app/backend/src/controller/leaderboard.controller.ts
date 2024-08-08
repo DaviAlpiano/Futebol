@@ -8,6 +8,11 @@ export default class LeaderboardController {
     res.status(mapStatusHTTP(status)).json(data);
   }
 
+  static async getLeaderbordHome(req: Request, res: Response): Promise<void> {
+    const { status, data } = await LeaderboardService.getLeaderboardServicesHome();
+    res.status(mapStatusHTTP(status)).json(data);
+  }
+
   static async getLeaderbordAway(req: Request, res: Response): Promise<void> {
     const { status, data } = await LeaderboardService.getLeaderboardServicesAway();
     res.status(mapStatusHTTP(status)).json(data);

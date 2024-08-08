@@ -30,6 +30,15 @@ export default class TeamService {
   static async getTeamsAndMatches(): Promise<getTeamsAndMatchsType> {
     const data = await TeamModel.findAll({
       include: [
+        { model: MatchesModel, as: 'matches', where: { inProgress: 0 } },
+        { model: MatchesModel, as: 'matchesAway', where: { inProgress: 0 } }],
+    });
+    return { status: 'successful', data };
+  }
+
+  static async getTeamsAndMatchesHome(): Promise<getTeamsAndMatchsType> {
+    const data = await TeamModel.findAll({
+      include: [
         { model: MatchesModel, as: 'matches', where: { inProgress: 0 } }],
     });
     return { status: 'successful', data };
